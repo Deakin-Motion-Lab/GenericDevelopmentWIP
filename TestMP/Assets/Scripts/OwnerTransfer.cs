@@ -13,12 +13,12 @@ namespace CrossPlatformVR
     {
         private bool changeColour;
 
-        private void OnMouseDown()
-        {
-            photonView.RequestOwnership();
-        }
+        //private void OnMouseDown()
+        //{
+        //    photonView.RequestOwnership();
+        //}
 
-        // TBC: attempting to transfer ownership to local player when they "touch" the ball with their vr hand
+        // Transfer ownership to local player when they "touch" the ball with their vr hand
         private void OnTriggerEnter(Collider other)
         {
             if (photonView.IsMine)
@@ -31,7 +31,7 @@ namespace CrossPlatformVR
             }
         }
 
-        // TBC: attempting to transfer ownership back to scene when a vr user "releases" the ball
+        // Transfer ownership back to scene when a vr user "releases" the ball
         private void OnTriggerExit(Collider other)
         {
             if (photonView.IsMine)
