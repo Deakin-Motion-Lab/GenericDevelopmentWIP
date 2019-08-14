@@ -10,10 +10,7 @@ namespace CrossPlatformVR
     {
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
-
-        //public Material masterMaterial;
-        //public Material remoteMaterial;
-
+        
 
         // Awake is called at instantiation
         private void Awake()
@@ -23,6 +20,17 @@ namespace CrossPlatformVR
             if (photonView.IsMine)
             {
                 LocalPlayerInstance = gameObject;
+
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    Debug.Log("I am the master client...");
+                    GetComponent<Renderer>().material.color = Color.red;
+                }
+                else
+                {
+                    Debug.Log("I am the remote client...");
+                    GetComponent<Renderer>().material.color = Color.yellow;
+                }
             }
 
             // #Critical
@@ -33,14 +41,7 @@ namespace CrossPlatformVR
         // Start is called before the first frame update
         void Start()
         {
-            //if ()
-            //{
-            //    gameObject.GetComponent<Renderer>().material.color = Color.blue;
-            //}
-            //else
-            //{
-            //    gameObject.GetComponent<Renderer>().material.color = Color.red;
-            //}
+
         }
 
         // Update is called once per frame
@@ -64,8 +65,8 @@ namespace CrossPlatformVR
                 {
                     transform.position = new Vector3(transform.position.x + 2 * Time.deltaTime, transform.position.y, transform.position.z);
                 }
-                // Spawn a ball
-                //if (Input.GetKeyDown(KeyCode.Space))
+                //// Spawn a ball
+                //else if (Input.GetKeyDown(KeyCode.Space))
                 //{
                 //    BallSpawn.CreateBall();
                 //}

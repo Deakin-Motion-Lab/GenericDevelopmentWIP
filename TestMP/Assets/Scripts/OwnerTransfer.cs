@@ -9,8 +9,10 @@ namespace CrossPlatformVR
     /// <summary>
     /// Basic transfer of ownership of a scene object (ball) to the local player (when 
     /// </summary>
-    public class OwnerTransfer : MonoBehaviourPunCallbacks
+    public class OwnerTransfer : MonoBehaviourPunCallbacks, IPunObservable
     {
+        private bool changeColour;
+
         private void OnMouseDown()
         {
             photonView.RequestOwnership();
@@ -24,6 +26,7 @@ namespace CrossPlatformVR
                 if (other.tag == "VRGrab")
                 {
                     photonView.RequestOwnership();
+                    changeColour = true;
                 }
             }
         }
@@ -37,6 +40,7 @@ namespace CrossPlatformVR
                 {
                     // Transfer ownership back to scene
                     photonView.TransferOwnership(0);
+                    changeColour = false;
                 }
             }
         }
@@ -50,23 +54,32 @@ namespace CrossPlatformVR
         // Update is called once per frame
         void Update()
         {
-            // Check ownership transfer request and transfer as required
-            if (photonView.Owner == PhotonNetwork.LocalPlayer)
+            ChangeColour();
+        }
+
+        private void ChangeColour()
+        {
+            if (changeColour)
             {
-                Debug.Log("I own the ball");
                 GetComponent<Renderer>().material.color = Color.blue;
             }
             else
             {
-                if (photonView.Owner == null)
-                {
-                    Debug.Log("Ball owned by SCENE");
-                }
-                else
-                {
-                    Debug.Log("Ball owned by: " + photonView.Owner);
-                }
                 GetComponent<Renderer>().material.color = Color.white;
+            }
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(changeColour);
+                Debug.Log("Sending color update");
+            }
+            else
+            {
+                changeColour = (bool)stream.ReceiveNext();
+                Debug.Log("Receiving color update");
             }
         }
     }

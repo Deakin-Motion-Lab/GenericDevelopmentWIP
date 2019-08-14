@@ -6,16 +6,17 @@ using Photon.Realtime;
 
 namespace CrossPlatformVR
 {
-    public class BallSpawn : MonoBehaviourPun
+    public class BallSpawn : MonoBehaviourPunCallbacks
     {
         public GameObject ball;
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                CreateBall();
-            }
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    CreateBall();
+                }
+
         }
 
         public void CreateBall()

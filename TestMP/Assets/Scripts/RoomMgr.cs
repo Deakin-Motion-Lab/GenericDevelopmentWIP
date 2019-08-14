@@ -69,15 +69,14 @@ namespace CrossPlatformVR
                     /* PH: Added to test where players instantiate according to their type) */
                     if (PhotonNetwork.IsMasterClient)
                     {
+                        Debug.Log("Master Client instantiated by RoomMgr...");
                         PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(0f, 1f, 0f), Quaternion.identity, 0);
-                        Debug.Log("Master Client instantiated by RoomMgr");
                     }
                     else
                     {
+                        Debug.Log("Remote Client instantiated by RoomMgr...");
                         PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(1f, 1f, 0f), Quaternion.identity, 0);
-                        Debug.Log("Remote Client instantiated by RoomMgr");
                     }
-
                 }
                 else
                 {
