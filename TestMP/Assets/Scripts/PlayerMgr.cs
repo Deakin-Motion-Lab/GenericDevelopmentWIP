@@ -10,7 +10,7 @@ namespace CrossPlatformVR
     {
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
-        
+        public GameObject ball;
 
         // Awake is called at instantiation
         private void Awake()
@@ -38,12 +38,6 @@ namespace CrossPlatformVR
             DontDestroyOnLoad(gameObject);
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
         // Update is called once per frame
         void Update()
         {
@@ -65,13 +59,19 @@ namespace CrossPlatformVR
                 {
                     transform.position = new Vector3(transform.position.x + 2 * Time.deltaTime, transform.position.y, transform.position.z);
                 }
-                //// Spawn a ball
-                //else if (Input.GetKeyDown(KeyCode.Space))
-                //{
-                //    BallSpawn.CreateBall();
-                //}
+                // Spawn a ball
+                else if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    SpawnBall();
+                }
 
             }
+        }
+
+        private void SpawnBall()
+        {
+            Debug.Log("Ball instantiated from inside player mgr");
+            PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);
         }
     }
 }

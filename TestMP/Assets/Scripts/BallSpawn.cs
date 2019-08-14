@@ -12,10 +12,10 @@ namespace CrossPlatformVR
 
         private void Update()
         {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    CreateBall();
-                }
+            //if (Input.GetKeyDown(KeyCode.Space))
+            //{
+            //    CreateBall();
+            //}
 
         }
 
