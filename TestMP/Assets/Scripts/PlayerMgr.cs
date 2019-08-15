@@ -36,6 +36,10 @@ namespace CrossPlatformVR
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(gameObject);
+
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            DontDestroyOnLoad(ball);
         }
 
         // Update is called once per frame
@@ -71,7 +75,8 @@ namespace CrossPlatformVR
         private void SpawnBall()
         {
             Debug.Log("Ball instantiated from inside player mgr");
-            PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);
+            // PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);       // Master client (can be changed to another player) controls this
+            PhotonNetwork.Instantiate(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);                     // Any player who instantiates controls this (ownership can be transfered)
         }
     }
 }

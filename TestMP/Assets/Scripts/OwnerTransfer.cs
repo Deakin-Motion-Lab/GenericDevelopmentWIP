@@ -12,6 +12,9 @@ namespace CrossPlatformVR
     public class OwnerTransfer : MonoBehaviourPunCallbacks, IPunObservable
     {
         private bool changeColour;
+        private Vector3 ballPosition;
+
+        
 
         // Transfer ownership to local player when they "touch" the ball with their vr hand
         private void OnTriggerEnter(Collider other)
@@ -24,6 +27,7 @@ namespace CrossPlatformVR
                     changeColour = true;
 
                     // Bind transform to player who triggered collision
+                    //GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
                     transform.SetParent(other.GetComponentInParent<Transform>());
                 }
             }
@@ -39,7 +43,9 @@ namespace CrossPlatformVR
                     // Transfer ownership back to scene
                     photonView.TransferOwnership(0);
                     changeColour = false;
+                    //GetComponent<Rigidbody>().isKinematic = false;      // Disables external forces that apply to the ball
                     transform.SetParent(null);
+                    
                 }
             }
         }
