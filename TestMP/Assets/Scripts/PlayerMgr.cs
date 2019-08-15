@@ -72,6 +72,9 @@ namespace CrossPlatformVR
             }
         }
 
+        /// <summary>
+        /// Allows individual networked players to spawn balls in the scene
+        /// </summary>
         private void SpawnBall()
         {
             Debug.Log("Ball instantiated from inside player mgr");
