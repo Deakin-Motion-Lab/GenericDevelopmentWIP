@@ -7,16 +7,14 @@ using Photon.Realtime;
 namespace CrossPlatformVR
 {
     /// <summary>
-    /// Basic transfer of ownership of a scene object (ball) to the local player (when 
+    /// Basic transfer of ownership of a scene object (ball) to the local player (when a collision event trigger occurs)
     /// </summary>
     public class OwnerTransfer : MonoBehaviourPunCallbacks, IPunObservable
     {
         private bool changeColour;
+        private Vector3 ballPosition;
 
-        //private void OnMouseDown()
-        //{
-        //    photonView.RequestOwnership();
-        //}
+        
 
         // Transfer ownership to local player when they "touch" the ball with their vr hand
         private void OnTriggerEnter(Collider other)
@@ -27,6 +25,10 @@ namespace CrossPlatformVR
                 {
                     photonView.RequestOwnership();
                     changeColour = true;
+
+                    // Bind transform to player who triggered collision
+                    //GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
+                    transform.SetParent(other.GetComponentInParent<Transform>());
                 }
             }
         }
@@ -41,14 +43,11 @@ namespace CrossPlatformVR
                     // Transfer ownership back to scene
                     photonView.TransferOwnership(0);
                     changeColour = false;
+                    //GetComponent<Rigidbody>().isKinematic = false;      // Disables external forces that apply to the ball
+                    transform.SetParent(null);
+                    
                 }
             }
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-            photonView.TransferOwnership(0);
         }
 
         // Update is called once per frame
@@ -57,6 +56,9 @@ namespace CrossPlatformVR
             ChangeColour();
         }
 
+        /// <summary>
+        /// Changes the colour of the ball to display ownership transfer between players and scene
+        /// </summary>
         private void ChangeColour()
         {
             if (changeColour)
@@ -69,17 +71,20 @@ namespace CrossPlatformVR
             }
         }
 
+        /// <summary>
+        /// Sends a boolean state across the network regarding the ball's ownership colour
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="info"></param>
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
             {
                 stream.SendNext(changeColour);
-                Debug.Log("Sending color update");
             }
             else
             {
                 changeColour = (bool)stream.ReceiveNext();
-                Debug.Log("Receiving color update");
             }
         }
     }

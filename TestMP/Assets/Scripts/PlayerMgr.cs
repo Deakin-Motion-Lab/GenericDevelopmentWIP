@@ -10,7 +10,7 @@ namespace CrossPlatformVR
     {
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
-        
+        public GameObject ball;
 
         // Awake is called at instantiation
         private void Awake()
@@ -36,12 +36,10 @@ namespace CrossPlatformVR
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(gameObject);
-        }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            DontDestroyOnLoad(ball);
         }
 
         // Update is called once per frame
@@ -65,13 +63,23 @@ namespace CrossPlatformVR
                 {
                     transform.position = new Vector3(transform.position.x + 2 * Time.deltaTime, transform.position.y, transform.position.z);
                 }
-                //// Spawn a ball
-                //else if (Input.GetKeyDown(KeyCode.Space))
-                //{
-                //    BallSpawn.CreateBall();
-                //}
+                // Spawn a ball
+                else if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    SpawnBall();
+                }
 
             }
+        }
+
+        /// <summary>
+        /// Allows individual networked players to spawn balls in the scene
+        /// </summary>
+        private void SpawnBall()
+        {
+            Debug.Log("Ball instantiated from inside player mgr");
+            // PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);       // Master client (can be changed to another player) controls this
+            PhotonNetwork.Instantiate(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);                     // Any player who instantiates controls this (ownership can be transfered)
         }
     }
 }
