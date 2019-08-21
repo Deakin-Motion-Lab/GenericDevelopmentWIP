@@ -6,11 +6,14 @@ using Photon.Realtime;
 
 namespace CrossPlatformVR
 {
-    public class PlayerMgr : MonoBehaviourPunCallbacks
+    public class PlayerMgr : MonoBehaviourPunCallbacks, IPunObservable
     {
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
         public GameObject ball;
+
+        private Vector3 otherPlayerPosition;
+        private Quaternion otherPlayerRotation;
 
         // Awake is called at instantiation
         private void Awake()
@@ -68,7 +71,11 @@ namespace CrossPlatformVR
                 {
                     SpawnBall();
                 }
-
+            }
+            else
+            {
+                transform.position = otherPlayerPosition;
+                transform.rotation = otherPlayerRotation;
             }
         }
 
@@ -80,6 +87,25 @@ namespace CrossPlatformVR
             Debug.Log("Ball instantiated from inside player mgr");
             // PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);       // Master client (can be changed to another player) controls this
             PhotonNetwork.Instantiate(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);                     // Any player who instantiates controls this (ownership can be transfered)
+        }
+
+        /// <summary>
+        /// Utilising serialize view to 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="info"></param>
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(transform.position);
+                stream.SendNext(transform.rotation);
+            }
+            else if (stream.IsReading)
+            {
+                otherPlayerPosition = (Vector3)stream.ReceiveNext();
+                otherPlayerRotation = (Quaternion)stream.ReceiveNext();
+            }
         }
     }
 }

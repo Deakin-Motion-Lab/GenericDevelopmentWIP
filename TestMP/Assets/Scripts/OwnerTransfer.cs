@@ -13,8 +13,7 @@ namespace CrossPlatformVR
     {
         private bool changeColour;
         private Vector3 ballPosition;
-
-        
+        private Color orig;
 
         // Transfer ownership to local player when they "touch" the ball with their vr hand
         private void OnTriggerEnter(Collider other)
@@ -27,7 +26,7 @@ namespace CrossPlatformVR
                     changeColour = true;
 
                     // Bind transform to player who triggered collision
-                    //GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
+                    GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
                     transform.SetParent(other.GetComponentInParent<Transform>());
                 }
             }
@@ -43,11 +42,16 @@ namespace CrossPlatformVR
                     // Transfer ownership back to scene
                     photonView.TransferOwnership(0);
                     changeColour = false;
-                    //GetComponent<Rigidbody>().isKinematic = false;      // Disables external forces that apply to the ball
+                    GetComponent<Rigidbody>().isKinematic = false;      // Disables external forces that apply to the ball
                     transform.SetParent(null);
                     
                 }
             }
+        }
+
+        void Start()
+        {
+            orig = GetComponent<Renderer>().material.color;
         }
 
         // Update is called once per frame
@@ -67,7 +71,7 @@ namespace CrossPlatformVR
             }
             else
             {
-                GetComponent<Renderer>().material.color = Color.white;
+                //GetComponent<Renderer>().material.color = orig;
             }
         }
 
