@@ -9,13 +9,27 @@ namespace CrossPlatformVR
         {
             if (collision.collider.tag == "Part")
             {
-                Debug.Log("Detected collision between " + gameObject.name + " and " + collision.collider.name);
+                Debug.Log("COLLISION detected between " + gameObject.name + " and " + collision.collider.name);
 
-                collision.collider.gameObject.GetComponent<Renderer>().material.color = Color.black;
+                // Take ownership of colliding objects (if we don't own it)
+                if (!collision.collider.gameObject.GetComponent<PhotonView>().IsMine)        
+                {
+                    collision.collider.gameObject.GetComponent<PhotonView>().RequestOwnership();        
+                }
 
-                PhotonNetwork.Destroy(this.gameObject);
+                if (!gameObject.GetComponent<PhotonView>().IsMine)
+                {
+                    gameObject.GetComponent<PhotonView>().RequestOwnership();
+                }
 
-                PhotonNetwork.Instantiate("capsule", Vector3.zero, Quaternion.identity);
+                
+                //PhotonNetwork.Destroy(collision.collider.gameObject);
+                PhotonNetwork.Destroy(gameObject);
+
+                GameObject caps = PhotonNetwork.Instantiate("capsule", new Vector3(1f, 1.5f, 0f), Quaternion.identity) ;
+                DontDestroyOnLoad(caps);
+                //DontDestroyOnLoad(PhotonNetwork.Instantiate("capsule", new Vector3(0f, 1f, 0f), Quaternion.identity));
+                //gameObject.SetActive(false);
             }
         }
     }

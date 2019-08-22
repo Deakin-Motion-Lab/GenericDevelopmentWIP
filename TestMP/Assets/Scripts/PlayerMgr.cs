@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 namespace CrossPlatformVR
 {
@@ -19,19 +20,19 @@ namespace CrossPlatformVR
         private void Awake()
         {
             // #Important
-            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+            // used in RoomMgr.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
             if (photonView.IsMine)
             {
                 LocalPlayerInstance = gameObject;
 
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    Debug.Log("I am the master client...");
+                    Debug.LogFormat("{0} is the master client...", PhotonNetwork.LocalPlayer.NickName);
                     GetComponent<Renderer>().material.color = Color.red;
                 }
                 else
                 {
-                    Debug.Log("I am the remote client...");
+                    Debug.LogFormat("{0} is standard client...", PhotonNetwork.LocalPlayer.NickName);
                     GetComponent<Renderer>().material.color = Color.yellow;
                 }
             }
@@ -39,10 +40,6 @@ namespace CrossPlatformVR
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(gameObject);
-
-            // #Critical
-            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-            DontDestroyOnLoad(ball);
         }
 
         // Update is called once per frame
@@ -50,6 +47,7 @@ namespace CrossPlatformVR
         {
             if (photonView.IsMine)
             {
+                // Control our player's avatar only
                 if (Input.GetKey(KeyCode.W))
                 {
                     transform.position = new Vector3(transform.position.x, transform.position.y + 2 * Time.deltaTime, transform.position.z);
@@ -71,9 +69,11 @@ namespace CrossPlatformVR
                 {
                     SpawnBall();
                 }
+
             }
             else
             {
+                // Update other player(s) avatar positions
                 transform.position = otherPlayerPosition;
                 transform.rotation = otherPlayerRotation;
             }
@@ -84,9 +84,14 @@ namespace CrossPlatformVR
         /// </summary>
         private void SpawnBall()
         {
-            Debug.Log("Ball instantiated from inside player mgr");
-            // PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);       // Master client (can be changed to another player) controls this
-            PhotonNetwork.Instantiate(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);                     // Any player who instantiates controls this (ownership can be transfered)
+            Debug.LogFormat("Ball instantiated from inside player mgr by {0}", PhotonNetwork.NickName);
+
+            // PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);       // Master client controls this (can be changed to other players) 
+
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            // The player who instantiates this object also controls it by default (ownership can be transfered)
+            DontDestroyOnLoad(PhotonNetwork.Instantiate(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity));
         }
 
         /// <summary>

@@ -10,17 +10,13 @@ namespace CrossPlatformVR
     public class Launcher : MonoBehaviourPunCallbacks
     {
         #region Private and Public Attributes
-        private string gameVersion = "1";       // Set to 1 by default, unless we need to make breaking changes on a project that is Live.
+        private string _gameVersion = "1";       // Set to 1 by default, unless we need to make breaking changes on a project that is Live.
 
         [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
         [SerializeField]
-        private byte maxPlayersPerRoom = 3;      // Set to 2
+        private byte _maxPlayersPerRoom = 2;      // Set to 2 by default
 
-        //[Tooltip("The UI 'connect' button to enable the user to connect")]
-        //[SerializeField]
-        //private GameObject connectButton;
-
-        private bool isConnecting;
+        private bool _isConnecting;
 
         #endregion
 
@@ -45,10 +41,7 @@ namespace CrossPlatformVR
         public void Connect()
         {
             // Set connecting flag - we are wanting to connect
-            isConnecting = true;
-
-            //// Update the UI control panel active status
-            //connectButton.SetActive(false);
+            _isConnecting = true;
 
             // Check if we are connected to Photon Network (server) and join a random room
             if (PhotonNetwork.IsConnected)
@@ -62,8 +55,9 @@ namespace CrossPlatformVR
             {
                 // Critical
                 // Connect to the Photon Network (server) 
-                PhotonNetwork.GameVersion = gameVersion;
-                PhotonNetwork.ConnectUsingSettings();       // Set on PhotonServerSettings in unity editor
+                PhotonNetwork.GameVersion = _gameVersion;
+                PhotonNetwork.NickName = NetworkPlayerSettings.NickName;                    // Assign a nickname to ID player in room
+                PhotonNetwork.ConnectUsingSettings();                                       // Set on PhotonServerSettings in unity editor
             }
         }
         #endregion
@@ -71,10 +65,11 @@ namespace CrossPlatformVR
         #region Photon Callbacks
         public override void OnConnectedToMaster()
         {
-            Debug.Log("OnConnectedToMaster() was called by PUN");
+            Debug.Log("Connected to server. [OnConnectedToMaster() was called by PUN]");
+            Debug.Log(PhotonNetwork.LocalPlayer.NickName);
 
             // Check if we are wanting to connect (prevent looping when we disconnect from a room)
-            if (isConnecting)
+            if (_isConnecting)
             {
                 // Critical
                 // Attempt to join a potential existing room.
@@ -95,12 +90,12 @@ namespace CrossPlatformVR
             // Critical
             // We failed to join a random room (room may not exist or room may be already full)
             // So, we create a new room.
-            PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = maxPlayersPerRoom });
+            PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = _maxPlayersPerRoom });
         }
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("OnJoinedRoom() was called by PUN. Now this client is in a room.");
+            Debug.LogFormat("OnJoinedRoom() was called by PUN. Now {0} is in a room.", PhotonNetwork.LocalPlayer.NickName);
             Debug.Log(PhotonNetwork.ServerAddress);
 
             // Critical
