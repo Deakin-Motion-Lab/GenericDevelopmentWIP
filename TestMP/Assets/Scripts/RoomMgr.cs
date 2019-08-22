@@ -26,7 +26,6 @@ namespace CrossPlatformVR
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             Debug.LogFormat("OnPlayerLeftRoom() {0}", otherPlayer.NickName);        // seen when another player disconnects
-            UITextPlayerCount.text = PhotonNetwork.CountOfPlayersInRooms.ToString();    // Update UI
 
             if (PhotonNetwork.IsMasterClient)
             {
@@ -39,7 +38,6 @@ namespace CrossPlatformVR
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             Debug.LogFormat("OnPlayerEnteredRoom() {0}", newPlayer.NickName);       // seen when another player connects
-            UITextPlayerCount.text = PhotonNetwork.CountOfPlayersInRooms.ToString();    // Update UI
 
             if (PhotonNetwork.IsMasterClient)
             {
@@ -60,7 +58,8 @@ namespace CrossPlatformVR
             {
                 if (PlayerMgr.LocalPlayerInstance == null)
                 {
-                    Debug.LogFormat("Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                    //Debug.LogFormat("Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                    Debug.LogFormat("Instantiating {1} from {0}", SceneManagerHelper.ActiveSceneName, PhotonNetwork.LocalPlayer.NickName);
 
                     // Spawn a character for the local player
                     // This gets synced by using PhotonNetwork.Instantiate
@@ -83,10 +82,7 @@ namespace CrossPlatformVR
                     Debug.LogFormat("ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
                 }
             }
-
-            UITextPlayerCount.text = PhotonNetwork.CountOfPlayers.ToString();
         }
-
 
         #region Public and Private Methods
         /// <summary>
