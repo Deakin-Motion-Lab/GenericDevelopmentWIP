@@ -7,6 +7,8 @@ TagManager:
   - VRGrab
   - Part
   - Floor
+  - sub-assy
+  - final-assy
   layers:
   - Default
   - TransparentFX

@@ -10,7 +10,6 @@ namespace CrossPlatformVR
     {
         [Tooltip("The prefab to use for representing the player")]
         public GameObject playerPrefab;
-        public Text UITextPlayerCount;
 
         #region Photon Callbacks
         /// <summary>
@@ -88,7 +87,7 @@ namespace CrossPlatformVR
         /// <summary>
         /// Make local player leave the room on Photon server
         /// </summary>
-        public void LeaveRoom()
+        public static void LeaveRoom()
         {
             PhotonNetwork.LeaveRoom();
         }

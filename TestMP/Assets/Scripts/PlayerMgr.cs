@@ -69,6 +69,11 @@ namespace CrossPlatformVR
                 {
                     SpawnBall();
                 }
+                // Leave Room
+                else if (Input.GetKeyDown(KeyCode.Alpha0))
+                {
+                    RoomMgr.LeaveRoom();
+                }
 
             }
             else

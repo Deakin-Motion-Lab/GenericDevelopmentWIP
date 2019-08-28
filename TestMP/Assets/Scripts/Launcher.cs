@@ -69,6 +69,7 @@ namespace CrossPlatformVR
             Debug.Log(PhotonNetwork.LocalPlayer.NickName);
 
             // Check if we are wanting to connect (prevent looping when we disconnect from a room)
+            //if (_isConnecting)
             if (_isConnecting)
             {
                 // Critical
