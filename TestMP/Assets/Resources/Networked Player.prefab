@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6005911740209045715}
   - component: {fileID: 2548704666020440221}
   - component: {fileID: 8091900810291217869}
+  - component: {fileID: 8606804843080312973}
   m_Layer: 0
   m_Name: Networked Player
   m_TagString: VRGrab
@@ -129,3 +130,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ball: {fileID: 6378597135271396283, guid: deab8f880fba583429e96e7d930e382f, type: 3}
+--- !u!114 &8606804843080312973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4597315488494394511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402a475ef1151f54982bc5a24ac6c8a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

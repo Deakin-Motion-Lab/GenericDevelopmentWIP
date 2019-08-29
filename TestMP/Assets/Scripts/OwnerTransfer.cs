@@ -9,89 +9,63 @@ namespace CrossPlatformVR
     /// <summary>
     /// Basic transfer of ownership of a scene object to the local player (when a collision event trigger occurs)
     /// </summary>
-    public class OwnerTransfer : MonoBehaviourPunCallbacks, IPunObservable
+    public class OwnerTransfer : MonoBehaviourPunCallbacks
     {
         private bool changeColour;
         private Vector3 ballPosition;
         private Color orig;
 
-        void Awake()
-        {
-            orig = GetComponent<Renderer>().material.color;
-        }
-
         // Transfer ownership to local player when they "touch" the ball with their vr hand
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Trigger Entered..." + other.gameObject.name);
+            /* NOTE:    "other" is the scene object we are interacting with */
+            Debug.Log("Trigger Entered with..." + other.name);
 
-            if (other.tag == "VRGrab")
+            if (other.tag == "Part" || other.tag == "sub-assy" || other.tag == "final-assy")        // Consider removing this condition: blanket trigger
             {
-                //// Take ownership of object if we don't own it
-                //if (!other.gameObject.GetComponent<PhotonView>().IsMine)        // Takes ownership of 'other' game object (eg. vr hands)
-                //{
-                //    Debug.Log("Old Owner: " + other.gameObject.GetComponent<PhotonView>().Owner.NickName);
-                //    other.gameObject.GetComponent<PhotonView>().RequestOwnership();        // Update 22/8/19: Not required for a networked player to interact with an object
-                //    Debug.Log("New Owner: " + other.gameObject.GetComponent<PhotonView>().Owner.NickName);
-                //}
+                // Store (original) colour of other object
+                orig = other.gameObject.GetComponent<Renderer>().material.color;
+                
+                // Request PhotonView ownership of other object
+                other.gameObject.GetComponent<PhotonView>().RequestOwnership();
 
+                // Change colour to show interaction
                 changeColour = true;
-                ChangeColour(changeColour);
+                ChangeColour(other.gameObject);
 
                 // Bind transform to player who triggered collision
-                //GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
-                transform.SetParent(other.GetComponentInParent<Transform>());
+                //other.GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
+                other.transform.SetParent(transform);
             }
         }
 
-        // Transfer ownership back to scene when a vr user "releases" the ball
+        /// <summary>
+        /// Transfer ownership back to scene when a vr user "releases" the ball 
+        /// </summary>
+        /// <param name="other"></param>
         private void OnTriggerExit(Collider other)
         {
-            if (photonView.IsMine)
-            {
-                if (other.tag == "VRGrab")
-                {
-                    // Transfer ownership back to scene
-                    //photonView.TransferOwnership(0);              // Update 22/8/19: Not required for a networked player to interact with an object
-                    changeColour = false;
-                    ChangeColour(changeColour);
-                    //GetComponent<Rigidbody>().isKinematic = false;      // Disables external forces that apply to the ball
-                    transform.SetParent(null);
-                }
-            }
+            Debug.Log("Trigger exited...");
+
+            other.transform.SetParent(null);
+            changeColour = false;
+            ChangeColour(other.gameObject);
+
+            other.gameObject.GetComponent<PhotonView>().TransferOwnership(0);
         }
-
-
 
         /// <summary>
         /// Changes the colour of the ball to display ownership transfer between players and scene
         /// </summary>
-        private void ChangeColour(bool isChanged)
+        private void ChangeColour(GameObject otherObject)
         {
-            if (isChanged)
+            if (changeColour)
             {
-                GetComponent<Renderer>().material.color = Color.blue;
+                otherObject.GetComponent<Renderer>().material.color = Color.blue;
             }
             else
             {
-                GetComponent<Renderer>().material.color = orig;
-            }
-        }
-
-        /// <summary>
-        /// Sends a boolean state across the network regarding the ball's ownership colour
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="info"></param>
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting)
-            {
-                stream.SendNext(changeColour);
-            }
-            else
-            {
-                ChangeColour((bool)stream.ReceiveNext());
+                otherObject.GetComponent<Renderer>().material.color = orig;
             }
         }
     }

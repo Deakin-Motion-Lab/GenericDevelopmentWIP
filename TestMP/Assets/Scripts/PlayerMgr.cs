@@ -67,7 +67,17 @@ namespace CrossPlatformVR
                 // Spawn a ball
                 else if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    SpawnBall();
+                    // Spawn a ball (scene object) if we are Master
+                    if (PhotonNetwork.IsMasterClient)
+                    {
+                        SpawnBall();
+                    }
+                    else
+                    {
+                        // Request the master spawns the ball (scene object)
+                        photonView.RPC("SpawnBall", RpcTarget.MasterClient);
+                    }
+                    
                 }
                 // Leave Room
                 else if (Input.GetKeyDown(KeyCode.Alpha0))
@@ -87,6 +97,7 @@ namespace CrossPlatformVR
         /// <summary>
         /// Allows individual networked players to spawn balls in the scene
         /// </summary>
+        [PunRPC]
         private void SpawnBall()
         {
             Debug.LogFormat("Ball instantiated from inside player mgr by {0}", PhotonNetwork.NickName);
@@ -96,7 +107,7 @@ namespace CrossPlatformVR
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             // The player who instantiates this object also controls it by default (ownership can be transfered)
-            DontDestroyOnLoad(PhotonNetwork.Instantiate(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity));
+            DontDestroyOnLoad(PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity));
         }
 
         /// <summary>

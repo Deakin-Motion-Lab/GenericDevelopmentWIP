@@ -50,7 +50,7 @@ namespace CrossPlatformVR
 
                 // Instantiate new game object (assembled part)
                 //GameObject caps = PhotonNetwork.Instantiate("Capsule", new Vector3(1f, 1.0f, 0f), Quaternion.identity);
-                DontDestroyOnLoad(PhotonNetwork.Instantiate(newAssembly.name, new Vector3(1f, 1.0f, 0f), Quaternion.identity));
+                DontDestroyOnLoad(PhotonNetwork.InstantiateSceneObject(newAssembly.name, new Vector3(0f, 1.0f, 0f), Quaternion.identity));
 
                 // Destroy this game object
                 PhotonNetwork.Destroy(gameObject);
