@@ -18,7 +18,8 @@ namespace CrossPlatformVR
         // Transfer ownership to local player when they "touch" the ball with their vr hand
         private void OnTriggerEnter(Collider other)
         {
-            /* NOTE:    "other" is the scene object we are interacting with */
+            // NOTE:    "other" is the scene object we are interacting with!
+
             Debug.Log("Trigger Entered with..." + other.name);
 
             if (other.tag == "Part" || other.tag == "sub-assy" || other.tag == "final-assy")        // Consider removing this condition: blanket trigger

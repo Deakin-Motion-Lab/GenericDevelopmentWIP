@@ -33,15 +33,15 @@ namespace CrossPlatformVR
             {
                 if (player.IsMasterClient)
                 {
-                    sb.AppendLine(player.NickName + " (Master)");
+                    sb.AppendLine(player.ActorNumber.ToString() + " (Master)");
                 }
                 else
                 {
-                    sb.AppendLine(player.NickName);
+                    sb.AppendLine(player.ActorNumber.ToString());
                 }
-                
-                playerCount += 1;
             }
+
+            playerCount = PhotonNetwork.PlayerList.Length;
 
             // Update UI
             totalPlayers.text = playerCount.ToString();

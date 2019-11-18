@@ -23,24 +23,32 @@ namespace CrossPlatformVR
             // used in RoomMgr.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
             if (photonView.IsMine)
             {
-                LocalPlayerInstance = gameObject;
 
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    Debug.LogFormat("{0} is the master client...", PhotonNetwork.LocalPlayer.NickName);
-                    GetComponent<Renderer>().material.color = Color.red;
-                }
-                else
-                {
-                    Debug.LogFormat("{0} is standard client...", PhotonNetwork.LocalPlayer.NickName);
-                    GetComponent<Renderer>().material.color = Color.yellow;
-                }
+
+
+                LocalPlayerInstance = gameObject;
             }
 
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(gameObject);
         }
+
+        private void Start()
+        {
+            if (photonView.IsMine)
+            {
+                // Advise other players of local player's colour change (buffered)
+                //photonView.RPC("SetColour", RpcTarget.AllBuffered, photonView.OwnerActorNr);
+                Debug.Log("Actor Number: " + photonView.OwnerActorNr);
+            }
+        }
+
+        //[PunRPC]
+        //private void SetColour(int index)
+        //{
+        //    GetComponent<Renderer>().material.color = _Colours[index - 1];
+        //}
 
         // Update is called once per frame
         void Update()
@@ -77,14 +85,13 @@ namespace CrossPlatformVR
                         // Request the master spawns the ball (scene object)
                         photonView.RPC("SpawnBall", RpcTarget.MasterClient);
                     }
-                    
+
                 }
                 // Leave Room
                 else if (Input.GetKeyDown(KeyCode.Alpha0))
                 {
                     RoomMgr.LeaveRoom();
                 }
-
             }
             else
             {
@@ -100,15 +107,15 @@ namespace CrossPlatformVR
         [PunRPC]
         private void SpawnBall()
         {
-            Debug.LogFormat("Ball instantiated from inside player mgr by {0}", PhotonNetwork.NickName);
-
-            // PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity);       // Master client controls this (can be changed to other players) 
+            Debug.LogFormat("Ball instantiated from inside player mgr by {0}", photonView.OwnerActorNr);
 
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             // The player who instantiates this object also controls it by default (ownership can be transfered)
             DontDestroyOnLoad(PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity));
         }
+
+
 
         /// <summary>
         /// Utilising serialize view to 
@@ -127,6 +134,11 @@ namespace CrossPlatformVR
                 otherPlayerPosition = (Vector3)stream.ReceiveNext();
                 otherPlayerRotation = (Quaternion)stream.ReceiveNext();
             }
+        }
+
+        public override void OnJoinedRoom()
+        {
+            Debug.Log("From PlayerMgr.cs....we have joined a room!!");
         }
     }
 }

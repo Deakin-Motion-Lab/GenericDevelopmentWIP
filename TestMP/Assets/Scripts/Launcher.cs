@@ -56,7 +56,6 @@ namespace CrossPlatformVR
                 // Critical
                 // Connect to the Photon Network (server) 
                 PhotonNetwork.GameVersion = _gameVersion;
-                PhotonNetwork.NickName = NetworkPlayerSettings.NickName;                    // Assign a nickname to ID player in room
                 PhotonNetwork.ConnectUsingSettings();                                       // Set on PhotonServerSettings in unity editor
             }
         }

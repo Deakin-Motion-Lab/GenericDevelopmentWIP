@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: f052f56f-9bae-4088-ac00-d8ac4f41f36e
+    AppIdRealtime: 084b9e35-8879-486b-a13c-71af4cff87fb
     AppIdChat: 
     AppIdVoice: 
     AppVersion: 
@@ -33,5 +33,13 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - SpawnBall
+  - AssignPlayerColour
+  - RequestPlayerColour
+  - SetPlayerColour
+  - AnnounceNumber
+  - ShowMe
+  - SetColour
+  - CreateAssembly
+  - ChangeMyColour
   DisableAutoOpenWizard: 1
   ShowSettings: 1

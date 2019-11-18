@@ -17,22 +17,6 @@ namespace CrossPlatformVR
 
         private void OnCollisionEnter(Collision collision)
         {
-            //if (collision.collider.tag == "Part")
-            //{
-            //    Debug.Log("COLLISION detected between " + gameObject.name + " and " + collision.collider.name);
-
-            //    // Take ownership of colliding objects (if we don't own it)
-            //    if (!collision.collider.gameObject.GetComponent<PhotonView>().IsMine)        
-            //    {
-            //        collision.collider.gameObject.GetComponent<PhotonView>().RequestOwnership();        
-            //    }
-
-            //    if (!gameObject.GetComponent<PhotonView>().IsMine)
-            //    {
-            //        gameObject.GetComponent<PhotonView>().RequestOwnership();
-            //    }
-            //}
-
             // Only allow one collision event to destroy both objects (not both)
             // Prevent two instances of game objects spawning as identical objects (balls) get destroyed
             if (collision.collider.tag == tag)
@@ -42,6 +26,10 @@ namespace CrossPlatformVR
                     return;
                 }
 
+                // Takeover ownership of both objects (to allow local player to destroy both objects - cannot destroy an object which we do not own)
+                photonView.TransferOwnership(PhotonNetwork.LocalPlayer);
+                collision.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
+
                 // Set flag to disable "other" collider function (prevent both objects running this method)
                 collision.gameObject.GetComponent<CollisionFlag>().ignoreCollision = true;
 
@@ -49,12 +37,22 @@ namespace CrossPlatformVR
                 PhotonNetwork.Destroy(collision.gameObject);
 
                 // Instantiate new game object (assembled part)
-                //GameObject caps = PhotonNetwork.Instantiate("Capsule", new Vector3(1f, 1.0f, 0f), Quaternion.identity);
-                DontDestroyOnLoad(PhotonNetwork.InstantiateSceneObject(newAssembly.name, new Vector3(0f, 1.0f, 0f), Quaternion.identity));
+                // Request the master spawns the new assembly (scene object)
+                photonView.RPC("CreateAssembly", RpcTarget.MasterClient, newAssembly.name);
 
                 // Destroy this game object
                 PhotonNetwork.Destroy(gameObject);
             }
+        }
+
+        /// <summary>
+        /// Master client instantiates scene object (upon request via RPC)
+        /// </summary>
+        /// <param name="kinematic"></param>
+        [PunRPC]
+        public void CreateAssembly(string name)
+        {
+            DontDestroyOnLoad(PhotonNetwork.InstantiateSceneObject(newAssembly.name, new Vector3(0f, 1.0f, 0f), Quaternion.identity));
         }
     }
 }
