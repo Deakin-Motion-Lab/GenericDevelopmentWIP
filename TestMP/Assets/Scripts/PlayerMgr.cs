@@ -12,7 +12,8 @@ namespace CrossPlatformVR
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
         public GameObject ball;
-
+        public GameObject tool;
+        private bool toolOn;
         private Vector3 otherPlayerPosition;
         private Quaternion otherPlayerRotation;
 
@@ -23,9 +24,6 @@ namespace CrossPlatformVR
             // used in RoomMgr.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
             if (photonView.IsMine)
             {
-
-
-
                 LocalPlayerInstance = gameObject;
             }
 
@@ -92,6 +90,16 @@ namespace CrossPlatformVR
                 {
                     RoomMgr.LeaveRoom();
                 }
+                // Control tool
+                else if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    toolOn = !toolOn;
+                    photonView.RPC("ShowTool", RpcTarget.All, toolOn);
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    tool.SetActive(false);
+                }
             }
             else
             {
@@ -105,7 +113,7 @@ namespace CrossPlatformVR
         /// Allows individual networked players to spawn balls in the scene
         /// </summary>
         [PunRPC]
-        private void SpawnBall()
+        public void SpawnBall()
         {
             Debug.LogFormat("Ball instantiated from inside player mgr by {0}", photonView.OwnerActorNr);
 
@@ -115,7 +123,11 @@ namespace CrossPlatformVR
             DontDestroyOnLoad(PhotonNetwork.InstantiateSceneObject(ball.name, new Vector3(0f, 1f, 0f), Quaternion.identity));
         }
 
-
+        [PunRPC]
+        public void ShowTool(bool show)
+        {
+            tool.SetActive(show);
+        }
 
         /// <summary>
         /// Utilising serialize view to 
