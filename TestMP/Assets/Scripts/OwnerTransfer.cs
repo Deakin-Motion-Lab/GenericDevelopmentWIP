@@ -20,23 +20,27 @@ namespace CrossPlatformVR
         {
             // NOTE:    "other" is the scene object we are interacting with!
 
-            Debug.Log("Trigger Entered with..." + other.name);
+            Debug.LogFormat("Trigger Entered with ball (owned by {0}) and player (owned by {1})", this.gameObject.GetPhotonView().Owner, other.gameObject.GetPhotonView().Owner);
 
-            if (other.tag == "Part" || other.tag == "sub-assy" || other.tag == "final-assy")        // Consider removing this condition: blanket trigger
+            if (other.tag == "Tool")
             {
                 // Store (original) colour of other object
-                orig = other.gameObject.GetComponent<Renderer>().material.color;
-                
+                orig = gameObject.GetComponent<Renderer>().material.color;
+
                 // Request PhotonView ownership of other object
-                other.gameObject.GetComponent<PhotonView>().RequestOwnership();
+                //photonView.TransferOwnership(PhotonNetwork.LocalPlayer);      // Not correct
+                PhotonView ph = other.gameObject.GetPhotonView();
+                photonView.TransferOwnership(ph.Owner);
+
+                Debug.Log("My new owner is " + photonView.Owner);
 
                 // Change colour to show interaction
                 changeColour = true;
-                ChangeColour(other.gameObject);
+                ChangeColour();
 
                 // Bind transform to player who triggered collision
                 //other.GetComponent<Rigidbody>().isKinematic = true;     // Disables external forces that apply to the ball
-                other.transform.SetParent(transform);
+                transform.SetParent(other.transform);
             }
         }
 
@@ -48,25 +52,25 @@ namespace CrossPlatformVR
         {
             Debug.Log("Trigger exited...");
 
-            other.transform.SetParent(null);
+            transform.SetParent(null);
             changeColour = false;
-            ChangeColour(other.gameObject);
+            ChangeColour();
 
-            other.gameObject.GetComponent<PhotonView>().TransferOwnership(0);
+            photonView.TransferOwnership(0);
         }
 
         /// <summary>
         /// Changes the colour of the ball to display ownership transfer between players and scene
         /// </summary>
-        private void ChangeColour(GameObject otherObject)
+        private void ChangeColour()
         {
             if (changeColour)
             {
-                otherObject.GetComponent<Renderer>().material.color = Color.blue;
+                gameObject.GetComponent<Renderer>().material.color = Color.blue;
             }
             else
             {
-                otherObject.GetComponent<Renderer>().material.color = orig;
+                gameObject.GetComponent<Renderer>().material.color = orig;
             }
         }
     }

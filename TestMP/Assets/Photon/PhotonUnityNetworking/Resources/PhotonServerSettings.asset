@@ -41,5 +41,6 @@ MonoBehaviour:
   - SetColour
   - CreateAssembly
   - ChangeMyColour
+  - ShowTool
   DisableAutoOpenWizard: 1
   ShowSettings: 1

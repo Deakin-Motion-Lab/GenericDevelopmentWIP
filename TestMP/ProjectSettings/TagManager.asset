@@ -9,6 +9,7 @@ TagManager:
   - Floor
   - sub-assy
   - final-assy
+  - Tool
   layers:
   - Default
   - TransparentFX
